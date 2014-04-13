@@ -1,0 +1,71 @@
+<h1>Welcome to Neptune Chess</h1>
+<div id="board" style="width: 400px"></div>
+<div id="choosewhite" onclick="chooseColor('white');">White</div>
+<div id="chooseblack" onclick="chooseColor('black');">Black</div>
+
+<script type="text/javascript">
+	// If the user has no player id, create one
+	var playerID = $.cookie("player_id");
+	if (!playerID) {
+		playerID = generatePlayerId();
+		$.cookie("player_id", playerID)
+	}
+	var my_color = "";
+	var board = new ChessBoard('board', 
+		{
+			game = new Chess(),
+			statusEl = $('#status'),
+			fenEl = $('#fen'),
+			pgnEl = $('#pgn'),
+			onDrop: onDrop,
+			onDragStart: onDragStart,
+			showNotation: false,
+			pieceTheme: '/images/chesspieces/alpha/{piece}.png'
+		});
+	
+	// Initialize board
+	var cfg = {}
+	$.get(
+		"/game",
+		{playerID: playerID},
+		function(data){
+			my_color = data["user_color"];
+			if (data["seats_available"].length > 0){
+				// If seat(s) are available, offer one to the user
+				data["seats_available"].forEach(function(seat) {
+					$("#choose"+seat)[0].style.visibility = "visible";
+					});
+			}
+	  		else {
+	  			// Display board
+  				board.draggable = (data["turn"] == my_color);
+				board.position(data["fen"]);
+	  		}
+		}
+	);
+	
+	// Check for update to the game
+	setInterval(function(){
+		$.get(
+	  		"/game",
+	  		{playerID: playerID},
+		  	function(data){
+		  		if(!data["seats_available"].length > 0){
+			  		// Match local fen to server fen
+			  		if(!(data["fen"] == board.position)){
+			  			board.position(data["fen"])
+			  		}
+			  		// Check if it's your turn
+			  		if(data["turn"] == my_color){
+			  			board.draggable = true;
+			  		}
+			  	}
+		  	}
+	  	)
+	},10000);
+
+	// Listen for moves
+
+
+	// Make move
+</script>
