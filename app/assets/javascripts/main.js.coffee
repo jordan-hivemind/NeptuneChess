@@ -2,6 +2,32 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+my_color = ""
+board = ChessBoard('board',
+  draggable: true,
+  onDrop: onDrop,
+  onDragStart: onDragStart,
+  onSnapEnd: onSnapEnd,
+  showNotation: false,
+  pieceTheme: '/images/chesspieces/alpha/{piece}.png')
+
+@initializeBoard = () ->
+  $.get "/game", {playerID: playerID},
+    @ ->
+      my_color = data["user_color"]
+      if (data["seats_available"].length > 0)
+        # If seat(s) are available, offer one to the user
+        data["seats_available"].forEach @(seat) ->
+            $("#choose"+seat)[0].style.visibility = "visible"
+      else 
+        # Display board
+        game.load(data["fen"])
+        board.position(data["fen"])
+        if my_color != data["turn"]
+          board.draggable = false
+        board.orientation(my_color)
+window.initializeBoard = initializeBoard
+
 @generatePlayerId = (length=8) ->
   id = ""
   id += Math.random().toString(36).substr(2) while id.length < 8
@@ -11,6 +37,8 @@
   $.post(
     "/game/choose_color",
     {playerID: $.cookie("player_id"), color: color})
+  $("#choose"+color).addClass("disabled")
+  $("#choose"+color).unbind("click")
   my_color = color
 
 # do not pick up pieces if the game is over; only pick up pieces for the side to move
@@ -34,7 +62,7 @@
   # Tell server
   $.post(
     "/game/move",
-    {playerID: $.cookie("player_id"), source: source, target: target, fen: ChessBoard.objToFen(newPos)})
+    {playerID: $.cookie("player_id"), source: source, target: target, fen: game.fen()})
 
 @updateStatus = () ->
   status = ''

@@ -5,3 +5,17 @@
 #chooseWhite, #chooseBlack {
 	visibility:hidden;
 }
+
+.button {
+  padding: 10px;
+  background-color: #127905;
+  color: white;
+  text-shadow: 2px 2px gray;
+  display: inline-block;
+  cursor: pointer;
+  }
+
+.button.disabled {
+    background-color: gray;
+    cursor: pointer;
+}

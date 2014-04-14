@@ -28,7 +28,7 @@ class Game < ActiveRecord::Base
 		elsif self.black == playerID
 			return "black"
 		else
-			return null
+			return nil
 		end
 	end
 end
