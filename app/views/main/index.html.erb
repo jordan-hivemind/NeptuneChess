@@ -11,18 +11,19 @@
 		$.cookie("player_id", playerID)
 	}
 	var my_color = "";
-	var board = new ChessBoard('board', 
+	var game = new Chess(); 
+  var board = new ChessBoard('board', 
 		{
-			game = new Chess(),
-			statusEl = $('#status'),
-			fenEl = $('#fen'),
-			pgnEl = $('#pgn'),
-			onDrop: onDrop,
+			draggable: true,
+      onDrop: onDrop,
 			onDragStart: onDragStart,
+      onSnapEnd: onSnapEnd,
 			showNotation: false,
 			pieceTheme: '/images/chesspieces/alpha/{piece}.png'
 		});
-	
+  updateStatus();
+  
+
 	// Initialize board
 	var cfg = {}
 	$.get(
@@ -63,9 +64,4 @@
 		  	}
 	  	)
 	},10000);
-
-	// Listen for moves
-
-
-	// Make move
 </script>
