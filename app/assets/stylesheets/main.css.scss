@@ -2,10 +2,6 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#chooseWhite, #chooseBlack {
-	visibility:hidden;
-}
-
 .button {
   padding: 10px;
   background-color: #127905;
@@ -17,5 +13,5 @@
 
 .button.disabled {
     background-color: gray;
-    cursor: pointer;
+    cursor: default;
 }

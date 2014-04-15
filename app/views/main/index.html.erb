@@ -1,7 +1,7 @@
 <h1>Welcome to Neptune Chess</h1>
 <div id="board" style="width: 400px"></div>
-<div id="choosewhite" onclick="chooseColor('white');" class="button">White</div>
-<div id="chooseblack" onclick="chooseColor('black');" class="button">Black</div>
+<div id="choose_white" class="button disabled" title="white">White</div>
+<div id="choose_black" class="button disabled" title="black">Black</div>
 
 <script type="text/javascript">
 	// If the user has no player id, create one
@@ -11,6 +11,16 @@
 		$.cookie("player_id", playerID)
 	}
 	var game = new Chess(); 
+	board = new ChessBoard('board', 
+		{
+	  draggable: true,
+	  onDrop: onDrop,
+	  onDragStart: onDragStart,
+	  onSnapEnd: onSnapEnd,
+	  showNotation: false,
+	  pieceTheme: '/images/chesspieces/alpha/{piece}.png'
+		}
+	);
 
 	initializeBoard();
 	
@@ -23,11 +33,8 @@
 		  		if(data["seats_available"].length == 0){
 			  		// Match local fen to server fen
 			  		if(!(data["fen"] == board.position)){
-			  			board.position(data["fen"])
-			  		}
-			  		// Check if it's your turn
-			  		if(data["turn"] == my_color){
-			  			board.draggable = true;
+			  			board.position(data["fen"]);
+			  			game.load(data["fen"]);
 			  		}
 			  	}
 		  	}

@@ -3,7 +3,7 @@ class GameController < ApplicationController
 		# Check if there's a game going on, create one if there isn't
 		@game = Game.last
 		if @game.nil?
-			Game.create(:fen => Game::START_FEN)
+			@game = Game.create(:fen => Game::START_FEN)
 		end
 		render(json: {fen: @game.fen, turn: @game.turn, seats_available: @game.seats_available, user_color: @game.user_color(params["playerID"])})
 	end

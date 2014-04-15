@@ -14,7 +14,6 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
-
 //=require chessboard-0.3.0
 //=require jquery.cookie
 //=require chess.min

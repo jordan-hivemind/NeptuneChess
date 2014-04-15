@@ -2,51 +2,44 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-my_color = ""
-board = ChessBoard('board',
-  draggable: true,
-  onDrop: onDrop,
-  onDragStart: onDragStart,
-  onSnapEnd: onSnapEnd,
-  showNotation: false,
-  pieceTheme: '/images/chesspieces/alpha/{piece}.png')
+window.my_color = ""
 
-@initializeBoard = () ->
+initializeBoard = () ->
   $.get "/game", {playerID: playerID},
-    @ ->
-      my_color = data["user_color"]
+    (data) ->
+      window.my_color = data["user_color"]
       if (data["seats_available"].length > 0)
         # If seat(s) are available, offer one to the user
-        data["seats_available"].forEach @(seat) ->
-            $("#choose"+seat)[0].style.visibility = "visible"
+        data["seats_available"].forEach (seat) ->
+          console.log(seat)
+          $("#choose_"+seat).removeClass("disabled")
+          $("#choose_"+seat).bind("click", () -> 
+            $.post "/game/choose_color", {playerID: $.cookie("player_id"), color: @.title}
+            $("#choose_"+seat).addClass("disabled")
+            $("#choose_"+seat).unbind("click")
+            window.my_color = seat)
       else 
         # Display board
         game.load(data["fen"])
         board.position(data["fen"])
-        if my_color != data["turn"]
+        if window.my_color != data["turn"]
           board.draggable = false
-        board.orientation(my_color)
+        board.orientation(window.my_color)
 window.initializeBoard = initializeBoard
 
-@generatePlayerId = (length=8) ->
+generatePlayerId = (length=8) ->
   id = ""
   id += Math.random().toString(36).substr(2) while id.length < 8
   id.substr 0, length
-
-@chooseColor = (color) ->
-  $.post(
-    "/game/choose_color",
-    {playerID: $.cookie("player_id"), color: color})
-  $("#choose"+color).addClass("disabled")
-  $("#choose"+color).unbind("click")
-  my_color = color
+window.generatePlayerId = generatePlayerId
 
 # do not pick up pieces if the game is over; only pick up pieces for the side to move
-@onDragStart = (source, piece, position, orientation) ->
-  if (game.game_over() == true || (game.turn() == 'w' && piece.search(/^b/) != -1) || (game.turn() == 'b' && piece.search(/^w/) != -1))
+onDragStart = (source, piece, position, orientation) ->
+  if (game.game_over() == true || (game.turn() == 'w' && piece.search(/^b/) != -1) || (game.turn() == 'b' && piece.search(/^w/) != -1) || (window.my_color[0] != game.turn()))
     false;
-  
-@onDrop = (source, target, piece, newPos, oldPos, orientation) ->
+window.onDragStart = onDragStart
+
+onDrop = (source, target, piece, newPos, oldPos, orientation) ->
   # see if the move is legal
   move = game.move
     from: source,
@@ -59,10 +52,13 @@ window.initializeBoard = initializeBoard
 
   updateStatus()
 
+  board.draggable = false
+
   # Tell server
   $.post(
     "/game/move",
     {playerID: $.cookie("player_id"), source: source, target: target, fen: game.fen()})
+window.onDrop = onDrop
 
 @updateStatus = () ->
   status = ''
@@ -87,5 +83,6 @@ window.initializeBoard = initializeBoard
       status += ', ' + moveColor + ' is in check'
 
 # update the board position after the piece snap for castling, en passant, pawn promotion
-@onSnapEnd = () ->
+onSnapEnd = () ->
   board.position(game.fen())
+window.onSnapEnd = onSnapEnd
