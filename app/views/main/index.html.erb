@@ -1,7 +1,7 @@
 <h1>Welcome to Neptune Chess</h1>
 <div id="board" style="width: 400px"></div>
-<div id="choose_white" class="button disabled" title="white">White</div>
-<div id="choose_black" class="button disabled" title="black">Black</div>
+<div id="choose_white" class="choose_seat button disabled" title="white">White</div>
+<div id="choose_black" class="choose_seat button disabled" title="black">Black</div>
 
 <script type="text/javascript">
 	// If the user has no player id, create one
@@ -35,9 +35,16 @@
 			  		if(!(data["fen"] == board.position)){
 			  			board.position(data["fen"]);
 			  			game.load(data["fen"]);
+			  			$(".choose_seat").addClass("hidden");
 			  		}
+			  	} else {
+			  		$(".choose_seat").each(function() { 
+			  			if (data["seats_available"].indexOf(this.title) == -1) {
+			  				$(this).addClass("disabled");		
+			  			}
+			  		})
 			  	}
 		  	}
 	  	)
-	},1000);
+	},5000);
 </script>

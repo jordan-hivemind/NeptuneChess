@@ -11,7 +11,6 @@ initializeBoard = () ->
       if (data["seats_available"].length > 0)
         # If seat(s) are available, offer one to the user
         data["seats_available"].forEach (seat) ->
-          console.log(seat)
           $("#choose_"+seat).removeClass("disabled")
           $("#choose_"+seat).bind("click", () -> 
             $.post "/game/choose_color", {playerID: $.cookie("player_id"), color: @.title}
@@ -20,6 +19,7 @@ initializeBoard = () ->
             window.my_color = seat)
       else 
         # Display board
+        $(".choose_seat").addClass("hidden")
         game.load(data["fen"])
         board.position(data["fen"])
         if window.my_color != data["turn"]
