@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get 'game' => 'game#index'
   post 'game/choose_color'
   post 'game/move'
+  delete 'game/destroy'
   
   get 'welcome/index'
   post 'welcome/change'

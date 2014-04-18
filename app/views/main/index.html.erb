@@ -5,46 +5,11 @@
 
 <script type="text/javascript">
 	// If the user has no player id, create one
-	var playerID = $.cookie("player_id");
-	if (!playerID) {
-		playerID = generatePlayerId();
-		$.cookie("player_id", playerID)
-	}
-	var game = new Chess(); 
-	board = new ChessBoard('board', 
-		{
-	  draggable: true,
-	  onDrop: onDrop,
-	  onDragStart: onDragStart,
-	  onSnapEnd: onSnapEnd,
-	  showNotation: false,
-	  pieceTheme: '/images/chesspieces/alpha/{piece}.png'
-		}
-	);
+	var player = new Player();
+	player.setId();
 
-	initializeBoard();
+	var game = new Game(player);
 	
-	// Check for update to the game
-	setInterval(function(){
-		$.get(
-	  		"/game",
-	  		{playerID: playerID},
-		  	function(data){
-		  		if(data["seats_available"].length == 0){
-			  		// Match local fen to server fen
-			  		if(!(data["fen"] == board.position)){
-			  			board.position(data["fen"]);
-			  			game.load(data["fen"]);
-			  			$(".choose_seat").addClass("hidden");
-			  		}
-			  	} else {
-			  		$(".choose_seat").each(function() { 
-			  			if (data["seats_available"].indexOf(this.title) == -1) {
-			  				$(this).addClass("disabled");		
-			  			}
-			  		})
-			  	}
-		  	}
-	  	)
-	},5000);
+	// Check for updates to the game every x milliseconds
+	setInterval(function(){game.update()}, 1000);
 </script>

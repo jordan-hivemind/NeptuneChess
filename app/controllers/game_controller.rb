@@ -5,16 +5,16 @@ class GameController < ApplicationController
 		if @game.nil?
 			@game = Game.create(:fen => Game::START_FEN)
 		end
-		render(json: {fen: @game.fen, turn: @game.turn, seats_available: @game.seats_available, user_color: @game.user_color(params["playerID"])})
+		render(json: {fen: @game.fen, turn: @game.turn, seats_available: @game.seats_available, user_color: @game.user_color(params["playerId"])})
 	end
 
 	def choose_color
-		puts params["playerID"]
+		puts params["color"] + "cha cha cha"
 		@game = Game.last
 		if params["color"] == "white"
-			@game.update_attribute(:white, params["playerID"])
+			@game.update_attribute(:white, params["playerId"])
 		else
-			@game.update_attribute(:black, params["playerID"])
+			@game.update_attribute(:black, params["playerId"])
 		end
 		render nothing: true
 	end
@@ -25,5 +25,15 @@ class GameController < ApplicationController
 		Move.create(:source => params["source"], :target => params["target"], :game => @game)
 		@game.update_attribute(:fen, params["fen"])
 		render nothing: true
+	end
+
+	def destroy
+		@game = Game.last
+		if (playerId == @game.white || playerId == @game.black)
+			@game.destroy
+			render nothing: true
+		else
+			render(json: {}, :status => :unauthorized)
+		end
 	end
 end
