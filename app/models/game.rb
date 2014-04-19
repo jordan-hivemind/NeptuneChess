@@ -5,21 +5,22 @@ class Game < ActiveRecord::Base
 
 	def turn
 		if self.moves.nil? || (self.moves.length % 2 == 0)
-			return "white"
+			return "w"
 		else
-			return "black"
+			return "b"
 		end
 	end
 
-	def seats_available
-		s = []
-		if self.white.nil?
-			s << "white"
+	def report_seat(seat, playerId)
+		if seat.nil?
+			return nil
+		elsif seat == playerId
+			return "self"
+		elsif seat == "computer"
+			return "computer"
+		else
+			return "human"
 		end
-		if self.black.nil?
-			s << "black"
-		end
-		return s
 	end
 
 	def user_color(playerID)
@@ -29,6 +30,14 @@ class Game < ActiveRecord::Base
 			return "black"
 		else
 			return nil
+		end
+	end
+
+	def computer_turn?
+		if (self.turn == 'w' && self.white == "computer") || (self.turn == 'b' && self.black == "computer")
+			return true
+		else
+			return false
 		end
 	end
 end

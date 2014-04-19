@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
   root 'main#index'
   get 'game' => 'game#index'
-  post 'game/choose_color'
+  post 'game/choose_seat'
   post 'game/move'
   delete 'game/destroy'
+  post 'game/end'
   
   get 'welcome/index'
   post 'welcome/change'

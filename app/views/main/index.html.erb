@@ -1,15 +1,29 @@
-<h1>Welcome to Neptune Chess</h1>
-<div id="board" style="width: 400px"></div>
-<div id="choose_white" class="choose_seat button disabled" title="white">White</div>
-<div id="choose_black" class="choose_seat button disabled" title="black">Black</div>
-
-<script type="text/javascript">
-	// If the user has no player id, create one
-	var player = new Player();
-	player.setId();
-
-	var game = new Game(player);
-	
-	// Check for updates to the game every x milliseconds
-	setInterval(function(){game.update()}, 1000);
-</script>
+<head>
+  <title>Neptune Chess</title>
+  
+</head>
+<body>
+  <div id="board" style="width: 400px"></div>
+  <table>
+    <tr>
+      <td>White:</td>
+      <td><div id="play_white" class="choose_white button" title="white" onclick="$.post('/game/choose_seat', {white: game.player.id}); $('.choose_white').addClass('disabled'); $('.choose_white').unbind();">Play as White</div></td>
+      <td><div id="computer_white" class="choose_white button" title="white" onclick="$.post('/game/choose_seat', {white: 'computer'}); $('.choose_white').addClass('disabled'); $('.choose_white').unbind();">Computer as White</div></td>
+    </tr>
+    <tr>
+      <td>Black:</td>
+      <td><div id="play_black" class="choose_black button" title="black" onclick="$.post('/game/choose_seat', {black: game.player.id}); $('.choose_black').addClass('disabled'); $('.choose_black').unbind();">Play as Black</div></td>
+      <td><div id="computer_black" class="choose_black button" title="black" onclick="$.post('/game/choose_seat', {black: 'computer'}); $('.choose_black').addClass('disabled'); $('.choose_black').unbind();">Computer as Black</div></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><div id="end_game" class="button" onClick="$.post('/game/end');">New Game</div></td>
+    </tr>
+  </table>
+  <script type="text/javascript">
+    var game = new Game();
+    
+    // Check for updates to the game every x milliseconds
+    setInterval(function(){game.update()}, 3000);
+  </script>
+</body>

@@ -1,5 +1,9 @@
 class Game
-  constructor: (@player) ->
+  constructor: () ->
+    @id = ""
+    # If the user has no player id, create one
+    @player = new Player
+    
     @hand_on_piece = false
     @move_checker = new Chess
     @board = new ChessBoard 'board', {
@@ -11,47 +15,58 @@ class Game
       showNotation: false,
       pieceTheme: '/images/chesspieces/alpha/{piece}.png'
       }
+    @update
     
   update: () =>
     return true if @hand_on_piece
-    $.get "/game", { playerId: @player.id }, (data) =>
-      @player.color = data["user_color"]
-      if data["seats_available"].length == 0
-        console.log(@player.color)
-        @board.orientation(@player.color)
-        
-        # Hide side selection
-        $(".choose_seat").addClass("hidden")
-        
-        # Update local fen to server fen
-        if !(data["fen"] == @board.position)
-          @board.position(data["fen"])
-          @move_checker.load(data["fen"])
-          $(".choose_seat").addClass("hidden")
-        
-        @board.draggable = (@player.color == data["turn"])
+    $.get "/game", { playerId: @player.id, id: @id }, (data) =>
+      if data["moves"].length > @move_checker.history( {verbose: true} ).length
+        # More moves on server than client
+        for move in data["moves"].slice @move_checker.history( {verbose: true}).length
+          @makeMove move
       
+      else if data["seats"]["white"] == null || data["seats"]["black"] == null
+        # There are seats available
+        if data["seats"]["white"] == null
+          $(".choose_white").removeClass "hidden"
+        else
+          $(".choose_white").addClass "disabled"
+          $(".choose_white").unbind()
+
+        if data["seats"]["black"] == null
+          $(".choose_black").removeClass "hidden"
+        else
+          $(".choose_black").addClass "disabled"
+          $(".choose_black").unbind()
+
       else
-        # otherwise, mark seats available
-        data["seats_available"].forEach (seat) =>
-          $("#choose_"+seat).removeClass("disabled")
-          $("#choose_"+seat).bind "click", () =>
-            $.post "/game/choose_color", { playerId: @player.id, color: seat}
-            $("#choose_"+seat).addClass("disabled")
-            $("#choose_"+seat).unbind("click")
-        for button, index in $(".choose_seat")
-          if data["seats_available"].indexOf(button.title) == -1 
-            $("#" + button.id).addClass("disabled")
-            $("#" + button.id).unbind("click")
+        if @id == ""
+          # both sides claimed, new game
+          @id = data["id"]
+          
+          @player.seats.push('w') if data["seats"]["white"] == "self"
+          @player.seats.push('b') if data["seats"]["black"] == "self"
+
+          @board.orientation("black") if @player.seats.indexOf('b') != -1 && @player.seats.indexOf('w') == -1
+
+          $(".choose_white.button").addClass "hidden"
+          $(".choose_black.button").addClass "hidden"
+        
+          # Reset board
+          @board.position(data["fen"])
+          @move_checker.reset
 
   onDragStart: (source, piece, position, orientation) =>
     @hand_on_piece = true
-    if @move_checker.game_over() == true || (@move_checker.turn() == 'w' && piece.search(/^b/) != -1) || (@move_checker.turn() == 'b' && piece.search(/^w/) != -1) || (@player.color[0] != @move_checker.turn())
+    if @move_checker.game_over() == true || (@move_checker.turn() == 'w' && piece.search(/^b/) != -1) || (@move_checker.turn() == 'b' && piece.search(/^w/) != -1) || (@player.seats.indexOf(@move_checker.turn()) == -1)
       false
     true
 
   onDrop: (source, target, piece, newPos, oldPos, orientation) =>
     @hand_on_piece = false
+    if @player.seats.indexOf(@move_checker.turn()) == -1
+      return 'snapback'
+
     # see if the move is legal
     move = @move_checker.move
       from: source,
@@ -59,17 +74,21 @@ class Game
       promotion: 'q' # NOTE: always promote to a queen for example simplicity
       
     # illegal move
-    if (move == null) 
+    if (move == null)
       return 'snapback'
 
     @board.draggable = false
 
     # Tell server
-    $.post(
-      "/game/move",
-      {playerId: @player.id, source: source, target: target, fen: @move_checker.fen()})
+    $.post "/game/move", {playerId: @player.id, source: source, target: target, fen: @move_checker.fen()}
 
   onSnapEnd: () =>
+    @board.position(@move_checker.fen())
+
+  makeMove: (move) =>
+    # TODO: Validate server move
+    console.log(move)
+    @move_checker.move {from: move["source"], to: move["target"]}
     @board.position(@move_checker.fen())
 
 window.Game = Game

@@ -1,6 +1,6 @@
 <h1>Welcome#index</h1>
 <p>Find me in app/views/welcome/index.html.erb</p>
-<p><%= @directory %>
+<p><%= @move %>
 <p>Session: <%= session[:signed_in_at] %>
 <div id="board" style="width: 400px"></div>
 <script type="text/javascript">
@@ -19,15 +19,6 @@
 	  	);
 	};
 
-	setInterval(function(){
-		$.post(
-	  	"/welcome/change", 
-	  	{},
-	  	function(data){
-	  		board.position(data.new_pos)
-	  		}
-	  	)
-	},3000);
 
 	var cfg = {
 	    draggable: true,
