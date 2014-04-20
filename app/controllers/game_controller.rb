@@ -7,10 +7,8 @@ class GameController < ApplicationController
 		if game.nil?
 			game = Game.create(:fen => Game::START_FEN, :active => true)
 		end
-		puts game.fen
 		if game.computer_turn?
 			move = Stockfish.new.move(game)
-			puts move
 			Move.create(:source => move[0,2], :target => move[2,2], :game => game)
 		end
 		render(json: 
@@ -23,6 +21,14 @@ class GameController < ApplicationController
 				},
 				moves: game.moves
 			})
+	end
+
+	def set_fen
+		game = Game.find_by_active(true)
+		if params["fen"]
+			game.update_attribute(:fen, params["fen"])
+		end
+		render nothing: true
 	end
 
 	def choose_seat

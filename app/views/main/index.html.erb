@@ -4,6 +4,8 @@
 </head>
 <body>
   <div id="board" style="width: 400px"></div>
+ <table id = "moves">
+ </table>
   <table>
     <tr>
       <td>White:</td>
@@ -17,7 +19,7 @@
     </tr>
     <tr>
       <td></td>
-      <td><div id="end_game" class="button" onClick="$.post('/game/end');">New Game</div></td>
+      <td><div id="end_game" class="button" onClick="$.post('/game/end'); location.reload();">New Game</div></td>
     </tr>
   </table>
   <script type="text/javascript">

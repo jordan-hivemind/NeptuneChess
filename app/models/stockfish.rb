@@ -6,7 +6,7 @@ def move(game)
     stdin.puts("position fen " + game.fen)
     stdin.puts("option name Style type combo default Normal var Solid var Normal var Risky")
     stdin.puts("go depth 10")
-    sleep(2)
+    sleep(1)
     stdin.close
     result = stdout.read
     return /bestmove.*/.match(result).to_s.split[1]

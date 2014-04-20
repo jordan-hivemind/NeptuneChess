@@ -15,7 +15,7 @@ class Game
       showNotation: false,
       pieceTheme: '/images/chesspieces/alpha/{piece}.png'
       }
-    @update
+    @update()
     
   update: () =>
     return true if @hand_on_piece
@@ -24,6 +24,9 @@ class Game
         # More moves on server than client
         for move in data["moves"].slice @move_checker.history( {verbose: true}).length
           @makeMove move
+        $.post "/game", {fen: @move_checker.fen()}
+        $(".choose_white.button").addClass "hidden"
+        $(".choose_black.button").addClass "hidden"
       
       else if data["seats"]["white"] == null || data["seats"]["black"] == null
         # There are seats available
@@ -80,6 +83,7 @@ class Game
     @board.draggable = false
 
     # Tell server
+    # @writeMovetoScreen move
     $.post "/game/move", {playerId: @player.id, source: source, target: target, fen: @move_checker.fen()}
 
   onSnapEnd: () =>
@@ -87,8 +91,13 @@ class Game
 
   makeMove: (move) =>
     # TODO: Validate server move
-    console.log(move)
     @move_checker.move {from: move["source"], to: move["target"]}
-    @board.position(@move_checker.fen())
+    @board.position @move_checker.fen()
+    # @writeMovetoScreen move
 
+  writeMovetoScreen: (move) =>
+    if @move_checker.turn() == 'w'
+      $("#moves").append "<tr><td>" + move["source"] + "-" + move["target"] + "</td></tr>"
+    else
+      $("#moves tr:last").append "<td>" + move["source"] + "-" + move["target"] + "</td>"
 window.Game = Game
