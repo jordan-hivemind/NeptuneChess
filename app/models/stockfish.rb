@@ -1,5 +1,5 @@
 class Stockfish < ActiveRecord::Base
-def move(game)
+  def move(game)
     stdin, stdout, stderr = Open3.popen3('~/dev/NeptuneChess/bin/stockfish')
     stdin.puts("uci")
     stdin.puts("option name Hash type spin default 1 min 1 max 128")

@@ -11,28 +11,47 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140419194843) do
+ActiveRecord::Schema.define(version: 20140413154109) do
+
+  create_table "coordinates", force: true do |t|
+    t.integer  "path_id"
+    t.integer  "x"
+    t.integer  "y"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "games", force: true do |t|
     t.string   "fen"
     t.string   "white"
     t.string   "black"
+    t.boolean  "active"
     t.datetime "started_at"
     t.datetime "last_move_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "active"
   end
 
   create_table "moves", force: true do |t|
     t.integer  "game_id"
     t.string   "source"
     t.string   "target"
+    t.string   "flag"
+    t.string   "piece"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "stockfishes", force: true do |t|
+  create_table "nodes", force: true do |t|
+    t.integer  "x"
+    t.integer  "y"
+    t.string   "occupant"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "paths", force: true do |t|
+    t.integer  "move_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

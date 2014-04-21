@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get 'game' => 'game#index'
   post 'game' => 'game#set_fen'
   post 'game/choose_seat'
-  post 'game/move'
+  post 'move' => 'move#create'
   delete 'game/destroy'
   post 'game/end'
   

@@ -44,14 +44,6 @@ class GameController < ApplicationController
 		render nothing: true
 	end
 
-	def move
-		@game = Game.find_by_active(true)
-		# TODO: Check for legal
-		Move.create(:source => params["source"], :target => params["target"], :game => @game)
-		@game.update_attribute(:fen, params["fen"])
-		render nothing: true
-	end
-
 	def end
 		Game.find_by_active(true).update_attribute(:active, false)
 		render nothing: true

@@ -1,0 +1,3 @@
+class PathController < ApplicationController
+  
+end

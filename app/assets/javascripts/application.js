@@ -17,3 +17,4 @@
 //=require chessboard-0.3.0
 //=require jquery.cookie
 //=require chess.min
+//=require astar

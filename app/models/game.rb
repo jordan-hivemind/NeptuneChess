@@ -1,5 +1,6 @@
 class Game < ActiveRecord::Base
 	has_many :moves, dependent: :destroy
+	has_many :paths, through: :moves
 
 	START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
