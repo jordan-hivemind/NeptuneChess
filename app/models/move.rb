@@ -4,7 +4,7 @@ class Move < ActiveRecord::Base
   after_create :create_paths
 
   def create_paths
-    if self.flag == 'c'
+    if self.flag == 'c' || self.flag == "e"
       Path.create(:move => self).remove_captured()
     end
 

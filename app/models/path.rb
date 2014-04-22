@@ -32,27 +32,42 @@ class Path < ActiveRecord::Base
   end
 
   def remove_captured
+    captured = Coordinate.new.from_chess.coord(self.move.target)
+
+    is_white = !(/PNBRQK/.match(Node.find_by_x_and_y(x,y).occupant).blank?)
+
+    # Check for en passant
+    if self.move.flag == 'e'
+      captured.y = captured.y + (2 * (is_white ? 1 : -1))
+    end
+
+    x = captured.x
+    y = captured.y
+
     # First coordinate in the path is the location of the piece being taken
-    Coordinate.new.from_chess_coord(self, self.move.target).save
+    self.coordinates.create(:x => x, :y => y)
 
-    x = Coordinate.new.from_chess_coord(self, self.move.target).x
-    y = Coordinate.new.from_chess_coord(self, self.move.target).y
+    # Find an empty parking space
+    parking_spots = is_white ? Coordinate.new.parking[:white] : Coordinate.new.parking[:black]
 
-    is_white = !(/PNBRQK/.match(Node.find_by_x_and_y(x,y).occupant).nil?)
+    i = 0
+    while !(Node.find_by_x_and_y(parking_spots[i][:x], parking_spots[i][:y]).blank?)
+      i = i +1
+    end
+    parking_target = Coordinate.new(:x => parking_spots[i][:x], :y => parking_spots[i][:y])
 
     # Move half-step towards the center
     y = 1 - (y <=> 4.5)
-    Coordinate.create(:x => x, :y => y, :path => self)
+    self.coordinates.create(:x => x, :y => y)
 
     # Move to left edge if piece taken is white, right edge if black
-    x = 3 if is_white else x = 19
-    Coordinate.create(:x => x, :y => y, :path => self)
+    x = parking_target.x + (parking_target.x <=> x)
+    self.coordinates.create(:x => x, :y => y)
 
-    # TODO: Find empty parking square and move to it
-  end
+    y = parking_target.y
+    self.coordinates.create(:x => x, :y => y)
 
-  def en_passant
-    # TODO
+    self.coordinate.create(:x => parking_target.x, :y => y)
   end
 
   def castling
