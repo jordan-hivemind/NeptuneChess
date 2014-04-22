@@ -34,11 +34,9 @@ class Path < ActiveRecord::Base
   def remove_captured
     captured = Coordinate.new.from_chess.coord(self.move.target)
 
-    is_white = !(/PNBRQK/.match(Node.find_by_x_and_y(x,y).occupant).blank?)
-
     # Check for en passant
     if self.move.flag == 'e'
-      captured.y = captured.y + (2 * (is_white ? 1 : -1))
+      captured.y = captured.y + (2 * (is_white(captured) ? -1 : 1))
     end
 
     x = captured.x
@@ -71,10 +69,26 @@ class Path < ActiveRecord::Base
   end
 
   def castling
-    # TODO
+    y = is_white(self.coordinates.new(self.move.target)) ? 0 : 14
+    x = self.move.flag == 'q' ? 4 : 18
+    self.coordinates.create(:x => x, :y => y)
+
+    y = y + (y == 0 ? 1 : -1)
+    self.coordinates.create(:x => x, :y => y)
+
+    x = x + self.move.flag == 'q' ? 6 : 4
+    self.coordinates.create(:x => x, :y => y)
+
+    y = y + (y == 1 ? -1 : 1)
+    self.coordinates.create(:x => x, :y => y)
   end
 
   def promotion
     # TODO
+  end
+
+  private
+  def is_white(c)
+    return !(/PNBRQK/.match(Node.find_by_x_and_y(c.x,c.y).occupant).blank?)
   end
 end

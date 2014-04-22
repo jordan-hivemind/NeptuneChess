@@ -3,7 +3,6 @@ class Game
     @id = ""
     # If the user has no player id, create one
     @player = new Player
-    @graph = new Graph
     
     @hand_on_piece = false
     @move_checker = new Chess
@@ -102,8 +101,4 @@ class Game
     else
       $("#moves tr:last").append "<td>" + move["source"] + "-" + move["target"] + "</td>"
 
-  fentoGraph: (fen) ->
-    # Convert FEN to 15x23 graph. 2 columns of squares for taken pieces
-    graph = [][]
-    
 window.Game = Game

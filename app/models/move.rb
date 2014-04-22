@@ -5,21 +5,21 @@ class Move < ActiveRecord::Base
 
   def create_paths
     if self.flag == 'c' || self.flag == "e"
-      Path.create(:move => self).remove_captured()
+      self.paths.create.remove_captured()
     end
 
-    Path.create(:move => self).primary_path()
+    self.paths.create.primary_path()
 
     if self.flag == 'e'
-      Path.create(:move => self).en_passant()
+      self.paths.create.en_passant()
     end
 
     if self.flag == 'k' || self.flag == 'q'
-      Path.create(:move => self).castling()
+      self.paths.create.castling()
     end
 
     if self.flag == 'p'
-      Path.create(:move => self).promotion()
+      sef.paths.create.promotion()
     end
   end
 end
