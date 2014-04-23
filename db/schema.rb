@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 20140413154109) do
 
   create_table "paths", force: true do |t|
     t.integer  "move_id"
+    t.boolean  "processed"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

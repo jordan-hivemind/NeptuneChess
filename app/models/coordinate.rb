@@ -22,6 +22,8 @@ class Coordinate < ActiveRecord::Base
     self.x = (files.index(chess_coord[0]) * 2 + 4)
     self.y = (chess_coord[1].to_i - 1) * 2
 
+    self.save
+
     return self
   end
 end

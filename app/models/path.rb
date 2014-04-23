@@ -3,11 +3,11 @@ class Path < ActiveRecord::Base
   has_many :coordinates, dependent: :destroy
 
   def primary_path
-    # First coordinate in the path is the move source
-    Coordinates.new.from_chess_coord(self.move.source).save
+    # First coordinate in the path is the move source   
+    puts self.coordinates.create.from_chess_coord(self.move.source).save
 
     unless self.move.piece == 'n'
-      Coordinate.new.from_chess_coord(self.move.target).save
+      self.coordinates.create.from_chess_coord(self.move.target).save
     else
       x = Coordinate.new.from_chess_coord(self.move.source).x
       y = Coordinate.new.from_chess_coord(self.move.source).y 
@@ -15,19 +15,19 @@ class Path < ActiveRecord::Base
       # Half-step diagonal
       x = x + (Coordinate.new.from_chess_coord(self.move.target).x <=> x)
       y = y + (Coordinate.new.from_chess_coord(self.move.target).y <=> y)
-      Coordinate.create(:x => x, :y => y, :path => self)
+      self.coordinates.create(:x => x, :y => y).save
 
       # Full step on the long side
       x_movement = Coordinate.new.from_chess_coord(self.move.target).x - Coordinate.new.from_chess_coord(self.move.source).x
       y_movement = Coordinate.new.from_chess_coord(self.move.target).y - Coordinate.new.from_chess_coord(self.move.source).y
       x = x + (2 * (x_movement > y_movement ? 1 : 0) * (Coordinate.new.from_chess_coord(self.move.target).x <=> x))
       y = y + (2 * (x_movement > y_movement ? 0 : 1) * (Coordinate.new.from_chess_coord(self.move.target).y <=> y))
-      Coordinate.create(:x => x, :y => y, :path => self)
+      self.coordinates.create(:x => x, :y => y).save
 
       # Half-step diagonal
       x = x + (Coordinate.new.from_chess_coord(self.move.target).x <=> x)
       y = y + (Coordinate.new.from_chess_coord(self.move.target).y <=> y)
-      Coordinate.create(:x => x, :y => y, :path => self)
+      self.coordinate.create(:x => x, :y => y).save
     end
   end
 

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   post 'move' => 'move#create'
   delete 'game/destroy'
   post 'game/end'
+  get 'path' => 'path#index'
   
   get 'welcome/index'
   post 'welcome/change'

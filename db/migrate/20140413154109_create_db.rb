@@ -28,6 +28,7 @@ class CreateDb < ActiveRecord::Migration
 
     create_table :paths do |p|
       p.belongs_to :move
+      p.boolean :processed
       p.timestamps
     end
 
