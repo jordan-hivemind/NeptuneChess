@@ -4,11 +4,7 @@ xml.paths do
     xml.path do
       xml.id path.id
       path.coordinates.each do |c|
-        xml.coordinate do
-          xml.id c.id
-          xml.x c.x
-          xml.y c.y
-        end
+        xml.coord c.x.to_s + "," + c.y.to_s
       end
     end
   end

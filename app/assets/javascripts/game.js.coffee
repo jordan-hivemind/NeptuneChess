@@ -15,9 +15,8 @@ class Game
       showNotation: false,
       pieceTheme: '/images/chesspieces/alpha/{piece}.png'
       }
-    @update()
     
-  update: () =>
+  update: () =>    
     return true if @hand_on_piece
     $.get "/game", { playerId: @player.id, id: @id }, (data) =>
       if data["moves"].length > @move_checker.history( {verbose: true} ).length

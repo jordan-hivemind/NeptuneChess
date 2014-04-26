@@ -6,7 +6,7 @@ class PathController < ApplicationController
       format.xml  # index.builder
     end
     @paths.each do |p|
-      update_attribute(:processed => true)
+      # p.update_attributes(:processed => true)
     end
   end  
 end
