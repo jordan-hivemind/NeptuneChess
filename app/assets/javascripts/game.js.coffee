@@ -83,7 +83,7 @@ class Game
 
     # Tell server
     # @writeMovetoScreen move
-    $.post "/move", {playerId: @player.id, source: source, target: target, fen: @move_checker.fen()}
+    $.post "/move", {playerId: @player.id, source: source, target: target, flag: move["flags"], fen: @move_checker.fen()}
 
   onSnapEnd: () =>
     @board.position(@move_checker.fen())

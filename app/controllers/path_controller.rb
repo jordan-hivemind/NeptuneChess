@@ -4,6 +4,7 @@ class PathController < ApplicationController
     @paths = Path.where(:processed => nil)
     respond_to do |format|
       format.xml  # index.builder
+      format.txt
     end
     @paths.each do |p|
       # p.update_attributes(:processed => true)

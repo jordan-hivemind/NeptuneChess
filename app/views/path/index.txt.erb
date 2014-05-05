@@ -1,0 +1,6 @@
+<% @paths.each do |p| 
+  out = p.coordinates.collect do |c| 
+    c.x.to_s + "," + c.y.to_s
+  end -%>
+<%= out.join(";") %>
+<% end %>

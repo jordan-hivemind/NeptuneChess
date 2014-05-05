@@ -32,7 +32,7 @@ class Path < ActiveRecord::Base
   end
 
   def remove_captured
-    captured = Coordinate.new.from_chess.coord(self.move.target)
+    captured = Coordinate.new.from_chess_coord(self.move.target)
 
     # Check for en passant
     if self.move.flag == 'e'

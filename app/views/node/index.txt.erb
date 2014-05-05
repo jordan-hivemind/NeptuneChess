@@ -1,0 +1,8 @@
+<% 
+for y in 0..14
+  for x in 0..22
+    n = Node.find_by_x_and_y(x,y)
+    puts n.x.to_s + ", " + n.y.to_s + " --- " + n.occupant
+    -%><%= n.occupant.blank? ? "." : n.occupant %><% end -%>
+    <% end %>
+    
