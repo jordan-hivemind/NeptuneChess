@@ -10,10 +10,6 @@ class Move < ActiveRecord::Base
 
     self.paths.create.primary_path
 
-    if self.flag == 'e'
-      self.paths.create.en_passant
-    end
-
     if self.flag == 'k' || self.flag == 'q'
       self.paths.create.castling
     end

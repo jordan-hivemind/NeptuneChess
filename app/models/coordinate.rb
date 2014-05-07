@@ -5,16 +5,18 @@ class Coordinate < ActiveRecord::Base
     p = {white: [], black: []}
 
     for x in 0..1
-      for y in 0..8
+      for y in 0..7
         p[:white] << {x: x*2, y: y*2}
       end
     end
 
     for x in 10..11
-      for y in 0..8
+      for y in 0..7
         p[:black] << {x: x*2, y: y*2}
       end
     end      
+
+    return p
   end
 
   def from_chess_coord(chess_coord)

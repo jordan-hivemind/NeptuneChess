@@ -4,7 +4,7 @@ class Path < ActiveRecord::Base
 
   def primary_path
     # First coordinate in the path is the move source   
-    puts self.coordinates.create.from_chess_coord(self.move.source).save
+    self.coordinates.create.from_chess_coord(self.move.source).save
 
     unless self.move.piece == 'n'
       self.coordinates.create.from_chess_coord(self.move.target).save
@@ -29,6 +29,8 @@ class Path < ActiveRecord::Base
       y = y + (Coordinate.new.from_chess_coord(self.move.target).y <=> y)
       self.coordinate.create(:x => x, :y => y).save
     end
+
+    self.update_nodes
   end
 
   def remove_captured
@@ -46,10 +48,10 @@ class Path < ActiveRecord::Base
     self.coordinates.create(:x => x, :y => y)
 
     # Find an empty parking space
-    parking_spots = is_white ? Coordinate.new.parking[:white] : Coordinate.new.parking[:black]
+    parking_spots = is_white(captured) ? Coordinate.new.parking[:white] : Coordinate.new.parking[:black]
 
     i = 0
-    while !(Node.find_by_x_and_y(parking_spots[i][:x], parking_spots[i][:y]).blank?)
+    while !(Node.find_by_x_and_y(parking_spots[i][:x], parking_spots[i][:y]).occupant.blank?)
       i = i +1
     end
     parking_target = Coordinate.new(:x => parking_spots[i][:x], :y => parking_spots[i][:y])
@@ -65,7 +67,10 @@ class Path < ActiveRecord::Base
     y = parking_target.y
     self.coordinates.create(:x => x, :y => y)
 
-    self.coordinate.create(:x => parking_target.x, :y => y)
+    self.coordinates.create(:x => parking_target.x, :y => y)
+    self.save
+
+    self.update_nodes
   end
 
   def castling
@@ -81,10 +86,22 @@ class Path < ActiveRecord::Base
 
     y = y + (y == 1 ? -1 : 1)
     self.coordinates.create(:x => x, :y => y)
+
+    self.update_nodes
   end
 
   def promotion
     # TODO
+    self.update_nodes
+  end
+
+  def update_nodes
+    source = Node.find_by_x_and_y(self.coordinates[0].x, self.coordinates[0].y)
+
+    destination = Node.find_by_x_and_y(self.coordinates[self.coordinates.length - 1].x, self.coordinates[self.coordinates.length - 1].y)
+
+    destination.update_attribute(:occupant, source.occupant)
+    source.update_attribute(:occupant, "")
   end
 
   private
