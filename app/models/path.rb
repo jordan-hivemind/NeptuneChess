@@ -68,7 +68,6 @@ class Path < ActiveRecord::Base
     self.coordinates.create(:x => x, :y => y)
 
     self.coordinates.create(:x => parking_target.x, :y => y)
-    self.save
 
     self.update_nodes
   end
